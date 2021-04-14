@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'my_widget.i18n.dart';
+import 'my.i18n.dart';
 
 // Developed by Marcelo Glasberg (Aug 2019).
 // For more info, see: https://pub.dartlang.org/packages/i18n_extension
@@ -12,12 +12,12 @@ class MyWidget extends StatelessWidget {
       key: UniqueKey(),
       alignment: Alignment.center,
       padding: const EdgeInsets.all(8.0),
-      height: 100,
+      height: 200,
       color: Colors.grey[300],
       child: Text(
-        "Hello, welcome to this internationalization demo.".i18n,
+        greetings.i18n,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 20),
+        style: const TextStyle(fontSize: 20),
       ),
     );
   }

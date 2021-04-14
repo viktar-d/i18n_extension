@@ -20,11 +20,11 @@ void main(List<String> arguments) async {
     exit(1);
   }
 
-  var strings = GetI18nStrings(results["source-dir"]).run();
+  List<ExtractedString> strings = GetI18nStrings(results["source-dir"]).run();
 
   var outFile = File(results["output-file"]);
   await outFile.create();
-  exporters[fileFormat](strings).exportTo(outFile);
+  exporters[fileFormat]!(strings).exportTo(outFile);
 
   print(
       "Wrote ${strings.length} strings to template ${results["output-file"]}");

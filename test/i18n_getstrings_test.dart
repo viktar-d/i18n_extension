@@ -4,25 +4,35 @@ import 'package:i18n_extension/i18n_getstrings.dart';
 void main() {
   test("Simple case", () {
     var source = """
-    print("This is a test".i18n);
-    print("This should not match");
-    print('This is another %s test'.fill('great'));
-    print('This should not match');
+    void main() {
+      print("This is a test".i18n);
+      print("This should not match");
+      print('This is another %s test'.fill('great'));
+      print('This should not match');
+    }
     """;
     var results = GetI18nStrings("").processString(source);
-    expect(results, ["This is a test", "This is another %s test"]);
+    expect(
+        results,
+        ["This is a test", "This is another %s test"]
+            .map((e) => ExtractedString(e)));
   });
 
   test("Triple-quoted strings", () {
     var source = """
-    print("\""This is a
+    void main() {
+      print("\""This is a
 "test" "\"".i18n);
-    print(""\"This should not match"\"");
-    print('\''This is another test'\''.i18n);
-    print('\''This should not match'\'');
+      print(""\"This should not match"\"");
+      print('\''This is another test'\''.i18n);
+      print('\''This should not match'\'');
+    }
     """;
     var results = GetI18nStrings("").processString(source);
-    expect(results, ["This is a\n\"test\" ", "This is another test"]);
+    expect(
+        results,
+        ["This is a\n\"test\" ", "This is another test"]
+            .map((e) => ExtractedString(e)));
   });
 
   test("Invalid Dart", () {
@@ -32,6 +42,41 @@ void main() {
     """;
     var results = GetI18nStrings("").processString(source);
     expect(results, []);
+  });
+
+  test("Plurals in .POT", () {
+    var source = """
+    return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: TranslatableRichText(
+                    Text(
+                      '''%s order on %s'''.plural(_orders!.length).fill(
+                        <String>[
+                          _orders!.length.toStringAsFixed(
+                            0,
+                          ),
+                          formattedPickup
+                        ],
+                      ),
+                    ),
+                    richTexts: <BaseRichText>[
+                      BaseRichText(
+                        text: '%s order'
+                            .plural(_orders!.length)
+                            .fill(<String>[_orders!.length.toStringAsFixed(0)]),
+                        style: AppTextStyles.vocalOrderBoldTitle.copyWith(
+                          color: AppColors.vocalOrderErrorColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+    """;
+    var results = GetI18nStrings("").processString(source);
+    expect(results, [
+      ExtractedString('%s order on %s', pluralRequired: true),
+      ExtractedString('%s order', pluralRequired: true)
+    ]);
   });
 
   test("Real-world example", () {
@@ -96,7 +141,10 @@ class _SettingsRouteState extends State<SettingsRoute> {
   }
 }""";
     var results = GetI18nStrings("").processString(source);
-    expect(results, ['View', 'Invert Document Preview in Dark Mode']);
+    expect(
+        results,
+        ['View', 'Invert Document Preview in Dark Mode']
+            .map((e) => ExtractedString(e)));
   });
 
   test("Multi-line statements", () {
@@ -106,7 +154,40 @@ class _SettingsRouteState extends State<SettingsRoute> {
       .fill("test");
     """;
     var results = GetI18nStrings("").processString(source);
-    expect(results, ["mysamplestring %s"]);
+    expect(results, ["mysamplestring %s"].map((e) => ExtractedString(e)));
+  });
+
+  test("Simple case with comments", () {
+    var source = """
+    void main() {
+      print("This is a test".i18n);
+      // You will find it doesn't work past this point
+      print("This should not match");
+      print('This is another %s test'.fill('great'));
+      print('This should not match');
+    }
+    """;
+    var results = GetI18nStrings("").processString(source);
+    expect(
+        results,
+        ["This is a test", "This is another %s test"]
+            .map((e) => ExtractedString(e)));
+  });
+
+  test("Simple case with adjacent strings", () {
+    var source = """
+    var text = "This should be a single string, "
+               "hopefully it doesn't just recognise "
+               "the last part.".i18n;
+    var toxt = "This will not be translated, "
+               "so it shouldn't be recognised "
+               "at all.";     
+    """;
+    var results = GetI18nStrings("").processString(source);
+    expect(
+        results,
+        [
+          "This should be a single string, hopefully it doesn't just recognise the last part."
+        ].map((e) => ExtractedString(e)));
   });
 }
-

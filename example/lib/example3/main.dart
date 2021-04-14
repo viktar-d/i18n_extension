@@ -10,7 +10,6 @@ import 'my_widget.dart';
 /// It is NOT recommended to have two `I18n` widgets, at all.
 /// However, if for some reason it is inevitable, I've provided
 /// the I18n.forceRebuild() method to help you deal with it.
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -26,7 +25,7 @@ class MyApp extends StatelessWidget {
           const Locale('pt', "BR"),
         ],
         home: Scaffold(
-          appBar: AppBar(title: Text("Multiple i18n Demo")),
+          appBar: AppBar(title: const Text("Multiple i18n Demo")),
           body: MyScreen(),
         ),
       );
@@ -54,17 +53,17 @@ class _MyScreenState extends State<MyScreen> {
           // This is the FIRST instance of the I18n widget:
           I18n(
             id: "first",
-            initialLocale: Locale("en", "US"),
+            initialLocale: const Locale("en", "US"),
             child: Widget1(),
           ),
-          SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
           //
           // This is the SECOND instance of the I18n widget.
           // Note `Widget2` will change the locale as usual,
           // And then force the rebuild of the FIRST I18n widget.
           I18n(
             id: "second",
-            initialLocale: Locale("en", "US"),
+            initialLocale: const Locale("en", "US"),
             child: Widget2(),
           ),
         ],
@@ -73,7 +72,7 @@ class _MyScreenState extends State<MyScreen> {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 class Widget1 extends StatelessWidget {
   @override
@@ -92,12 +91,14 @@ class Widget2 extends StatelessWidget {
           MyWidget(),
           MaterialButton(
             color: Colors.blue,
-            child: Text(
+            child: const Text(
               "CLICK ME",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
             onPressed: () {
-              var newLocale = (I18n.localeStr == "pt_br") ? Locale("en", "US") : Locale("pt", "BR");
+              var newLocale = (I18n.localeStr == "pt_br")
+                  ? const Locale("en", "US")
+                  : const Locale("pt", "BR");
 
               // This changes the language and rebuilds the FIRST I18n widget.
               I18n.of(context).locale = newLocale;
@@ -112,4 +113,4 @@ class Widget2 extends StatelessWidget {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
